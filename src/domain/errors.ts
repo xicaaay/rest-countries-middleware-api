@@ -3,6 +3,7 @@ export type ErrorCode =
   | 'INVALID_PARAMETER'
   | 'COUNTRY_NOT_FOUND'
   | 'REGION_NOT_FOUND'
+  | 'ENDPOINT_NOT_FOUND'
   | 'UPSTREAM_ERROR'
   | 'UPSTREAM_UNAVAILABLE'
   | 'INTERNAL_ERROR';
@@ -31,6 +32,10 @@ export const countryNotFound = (code: string): AppError =>
 // 404: unknown region
 export const regionNotFound = (region: string): AppError =>
   new AppError('REGION_NOT_FOUND', 404, `No region exists with name ${region}.`);
+
+// 404: the URL itself doesn't match any endpoint of this API
+export const endpointNotFound = (method: string, path: string): AppError =>
+  new AppError('ENDPOINT_NOT_FOUND', 404, `No endpoint matches ${method} ${path}.`);
 
 // 502: the provider answered, but with an error or an unusable payload
 export const upstreamError = (): AppError =>
