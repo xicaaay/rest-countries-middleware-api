@@ -6,8 +6,8 @@ export interface Country {
   readonly name: string;
   readonly region: string;
   readonly capital: string | null;
-  readonly population: number;
-  readonly areaKm2: number | null; // null when the provider has no usable area
+  readonly population: number | null; // null when the provider has no usable value
+  readonly areaKm2: number | null; // null when the provider has no usable value
   readonly currencies: readonly string[]; // currency codes, e.g. ["GTQ"]
   readonly languages: readonly string[]; // language names, e.g. ["Spanish"]
   readonly borders: readonly string[]; // alpha-3 codes of land neighbors
