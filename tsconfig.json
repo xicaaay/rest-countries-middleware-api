@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    // Native ESM for Node 20+ (relative imports must use the .js extension)
+    "module": "nodenext",
+    "target": "es2022",
+    "types": ["node"],
+
+    // Build output
+    "rootDir": "src",
+    "outDir": "dist",
+    "sourceMap": true,
+
+    // Strict typing: no implicit any, no unchecked array/record access
+    "strict": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true
+  },
+  "include": ["src"]
+}
