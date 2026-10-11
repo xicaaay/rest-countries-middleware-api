@@ -1,0 +1,2306 @@
+{
+  "info": {
+    "name": "REST Countries Middleware API",
+    "description": "Requests that exercise every endpoint, validation rule and error of the middleware. Each request has tests, so the whole collection can be run with the Collection Runner. Change the \"baseUrl\" collection variable if the API does not run on port 3000.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. Countries",
+      "item": [
+        {
+          "name": "GTM - detail (uppercase)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "GTM"
+              ]
+            },
+            "description": "Flat contract with neighbors resolved by name and sorted by name; density rounded to 2 decimals."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.code === 'GTM'\", () => pm.expect(!!(json.code === 'GTM')).to.be.true);",
+                  "pm.test(\"json.name === 'Guatemala'\", () => pm.expect(!!(json.name === 'Guatemala')).to.be.true);",
+                  "pm.test(\"json.capital === 'Guatemala City'\", () => pm.expect(!!(json.capital === 'Guatemala City')).to.be.true);",
+                  "pm.test(\"json.currencies.includes('GTQ')\", () => pm.expect(!!(json.currencies.includes('GTQ'))).to.be.true);",
+                  "pm.test(\"json.languages.includes('Spanish')\", () => pm.expect(!!(json.languages.includes('Spanish'))).to.be.true);",
+                  "pm.test(\"json.neighbors.map(n => n.name).join() === 'Belize,El Salvador,Honduras,Mexico'\", () => pm.expect(!!(json.neighbors.map(n => n.name).join() === 'Belize,El Salvador,Honduras,Mexico')).to.be.true);",
+                  "pm.test(\"json.densityPerKm2 === Math.round(json.population / json.areaKm2 * 100) / 100\", () => pm.expect(!!(json.densityPerKm2 === Math.round(json.population / json.areaKm2 * 100) / 100)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GTM - lowercase code accepted",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/gtm",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "gtm"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.code === 'GTM'\", () => pm.expect(!!(json.code === 'GTM')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "MEX - several neighbors",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/MEX",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "MEX"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.neighbors.length >= 3\", () => pm.expect(!!(json.neighbors.length >= 3)).to.be.true);",
+                  "pm.test(\"json.neighbors.every((n, i, a) => i === 0 || a[i - 1].name.localeCompare(n.name) <= 0)\", () => pm.expect(!!(json.neighbors.every((n, i, a) => i === 0 || a[i - 1].name.localeCompare(n.name) <= 0))).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "JPN - island (no neighbors)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/JPN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "JPN"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Array.isArray(json.neighbors) && json.neighbors.length === 0\", () => pm.expect(!!(Array.isArray(json.neighbors) && json.neighbors.length === 0)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ZAF - several capitals, none primary -> first",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/ZAF",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "ZAF"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.capital === 'Pretoria'\", () => pm.expect(!!(json.capital === 'Pretoria')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ATA - Antarctica (no capital -> null)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/ATA",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "ATA"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.capital === null\", () => pm.expect(!!(json.capital === null)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "BVT - population 0 -> density 0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/BVT",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "BVT"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.population === 0\", () => pm.expect(!!(json.population === 0)).to.be.true);",
+                  "pm.test(\"json.densityPerKm2 === 0\", () => pm.expect(!!(json.densityPerKm2 === 0)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - unknown code (XYZ)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/XYZ",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "XYZ"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'COUNTRY_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'COUNTRY_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - unknown code (ABK, Abkhazia is discarded)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/ABK",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "ABK"
+              ]
+            },
+            "description": "Abkhazia has an empty alpha-3 code in the provider and is discarded."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'COUNTRY_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'COUNTRY_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - too short (GT)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/GT",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "GT"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - too long (GTMX)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/GTMX",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "GTMX"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - digits (123)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/123",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "123"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - mixed (G1M)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/G1M",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "G1M"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - malformed URL encoding",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/%E0%A4%A",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "%E0%A4%A"
+              ]
+            },
+            "description": "Express rejects the bad percent-encoding; we map it to our 400 format."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - /countries without code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'ENDPOINT_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'ENDPOINT_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "2. Routes",
+      "item": [
+        {
+          "name": "GTM -> PAN (4 crossings)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=PAN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "PAN"
+                }
+              ]
+            },
+            "description": "Example of the spec. BFS gives the minimum number of border crossings."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 4\", () => pm.expect(!!(json.crossings === 4)).to.be.true);",
+                  "pm.test(\"json.path.map(p => p.code).join() === 'GTM,HND,NIC,CRI,PAN'\", () => pm.expect(!!(json.path.map(p => p.code).join() === 'GTM,HND,NIC,CRI,PAN')).to.be.true);",
+                  "pm.test(\"json.path.length === json.crossings + 1\", () => pm.expect(!!(json.path.length === json.crossings + 1)).to.be.true);",
+                  "pm.test(\"json.from === 'GTM' && json.to === 'PAN'\", () => pm.expect(!!(json.from === 'GTM' && json.to === 'PAN')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PAN -> GTM (reverse)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=PAN&to=GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "PAN"
+                },
+                {
+                  "key": "to",
+                  "value": "GTM"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 4\", () => pm.expect(!!(json.crossings === 4)).to.be.true);",
+                  "pm.test(\"json.path[0].code === 'PAN'\", () => pm.expect(!!(json.path[0].code === 'PAN')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "lowercase codes accepted",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=gtm&to=pan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "gtm"
+                },
+                {
+                  "key": "to",
+                  "value": "pan"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.from === 'GTM'\", () => pm.expect(!!(json.from === 'GTM')).to.be.true);",
+                  "pm.test(\"json.to === 'PAN'\", () => pm.expect(!!(json.to === 'PAN')).to.be.true);",
+                  "pm.test(\"json.crossings === 4\", () => pm.expect(!!(json.crossings === 4)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GTM -> GTM (same country, 0 crossings)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "GTM"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 0\", () => pm.expect(!!(json.crossings === 0)).to.be.true);",
+                  "pm.test(\"json.path.length === 1\", () => pm.expect(!!(json.path.length === 1)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GTM -> BLZ (direct neighbors, 1 crossing)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=BLZ",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "BLZ"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 1\", () => pm.expect(!!(json.crossings === 1)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "PRT -> DEU (through Spain and France)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=PRT&to=DEU",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "PRT"
+                },
+                {
+                  "key": "to",
+                  "value": "DEU"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 3\", () => pm.expect(!!(json.crossings === 3)).to.be.true);",
+                  "pm.test(\"json.path.map(p => p.code).join() === 'PRT,ESP,FRA,DEU'\", () => pm.expect(!!(json.path.map(p => p.code).join() === 'PRT,ESP,FRA,DEU')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GTM -> CAN (through Mexico and USA)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=CAN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "CAN"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 3\", () => pm.expect(!!(json.crossings === 3)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GTM -> JPN (NO land route -> 200 + null)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=JPN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "JPN"
+                }
+              ]
+            },
+            "description": "Valid answer, not an error."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === null\", () => pm.expect(!!(json.crossings === null)).to.be.true);",
+                  "pm.test(\"Array.isArray(json.path) && json.path.length === 0\", () => pm.expect(!!(Array.isArray(json.path) && json.path.length === 0)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GTM -> AUS (other continent -> null)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=AUS",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "AUS"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === null\", () => pm.expect(!!(json.crossings === null)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "JPN -> JPN (island to itself)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=JPN&to=JPN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "JPN"
+                },
+                {
+                  "key": "to",
+                  "value": "JPN"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.crossings === 0\", () => pm.expect(!!(json.crossings === 0)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - unknown destination",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&to=XYZ",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "to",
+                  "value": "XYZ"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'COUNTRY_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'COUNTRY_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - unknown origin",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=XYZ&to=GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "XYZ"
+                },
+                {
+                  "key": "to",
+                  "value": "GTM"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'COUNTRY_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'COUNTRY_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - missing \"to\"",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - missing \"from\"",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?to=GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "to",
+                  "value": "GTM"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - missing both",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - empty value",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=&to=PAN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": ""
+                },
+                {
+                  "key": "to",
+                  "value": "PAN"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - invalid format",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GT&to=PAN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GT"
+                },
+                {
+                  "key": "to",
+                  "value": "PAN"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - repeated parameter",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/routes?from=GTM&from=MEX&to=PAN",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "routes"
+              ],
+              "query": [
+                {
+                  "key": "from",
+                  "value": "GTM"
+                },
+                {
+                  "key": "from",
+                  "value": "MEX"
+                },
+                {
+                  "key": "to",
+                  "value": "PAN"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "3. Regions ranking",
+      "item": [
+        {
+          "name": "Americas by density (limit 3)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=density&limit=3",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "density"
+                },
+                {
+                  "key": "limit",
+                  "value": "3"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.region === 'Americas'\", () => pm.expect(!!(json.region === 'Americas')).to.be.true);",
+                  "pm.test(\"json.sortBy === 'density'\", () => pm.expect(!!(json.sortBy === 'density')).to.be.true);",
+                  "pm.test(\"json.count === 3\", () => pm.expect(!!(json.count === 3)).to.be.true);",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Americas by population",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=population&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "population"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.items[0].code === 'USA'\", () => pm.expect(!!(json.items[0].code === 'USA')).to.be.true);",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Americas by area",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&limit=5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "5"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.items[0].code === 'CAN'\", () => pm.expect(!!(json.items[0].code === 'CAN')).to.be.true);",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "default limit is 5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Europe/ranking?sortBy=population",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Europe",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "population"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.count === 5\", () => pm.expect(!!(json.count === 5)).to.be.true);",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "limit = 1 (minimum)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Asia/ranking?sortBy=population&limit=1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Asia",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "population"
+                },
+                {
+                  "key": "limit",
+                  "value": "1"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.count === 1\", () => pm.expect(!!(json.count === 1)).to.be.true);",
+                  "pm.test(\"json.items[0].rank === 1\", () => pm.expect(!!(json.items[0].rank === 1)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "limit = 50 (maximum)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Africa/ranking?sortBy=area&limit=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Africa",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.count === 50\", () => pm.expect(!!(json.count === 50)).to.be.true);",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "region in lowercase -> canonical name",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/americas/ranking?sortBy=area",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.region === 'Americas'\", () => pm.expect(!!(json.region === 'Americas')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "region in UPPERCASE",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/EUROPE/ranking?sortBy=area",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "EUROPE",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.region === 'Europe'\", () => pm.expect(!!(json.region === 'Europe')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Oceania by density",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Oceania/ranking?sortBy=density",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Oceania",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "density"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Antarctic with limit 50 (count < limit)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Antarctic/ranking?sortBy=density&limit=50",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Antarctic",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "density"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "The region has fewer than 50 countries, so count is lower than limit."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.count >= 1 && json.count <= 5\", () => pm.expect(!!(json.count >= 1 && json.count <= 5)).to.be.true);",
+                  "pm.test(\"json.items.every((it, i) => it.rank === i + 1)\", () => pm.expect(!!(json.items.every((it, i) => it.rank === i + 1))).to.be.true);",
+                  "pm.test(\"json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value)\", () => pm.expect(!!(json.items.every((it, i, a) => i === 0 || a[i - 1].value >= it.value))).to.be.true);",
+                  "pm.test(\"json.count === json.items.length\", () => pm.expect(!!(json.count === json.items.length)).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - unknown region",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Atlantis/ranking?sortBy=area",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Atlantis",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'REGION_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'REGION_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - missing sortBy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - invalid sortBy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=gdp",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "gdp"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - sortBy wrong case (Density)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=Density",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "Density"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - limit = 0",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&limit=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - limit = 51 (above max)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&limit=51",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "51"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - limit = -1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&limit=-1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "-1"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - limit = abc",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&limit=abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "abc"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - limit = 2.5",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&limit=2.5",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "limit",
+                  "value": "2.5"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - repeated sortBy",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas/ranking?sortBy=area&sortBy=density",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "density"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 400 - region with digits",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Amer1cas/ranking?sortBy=area",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Amer1cas",
+                "ranking"
+              ],
+              "query": [
+                {
+                  "key": "sortBy",
+                  "value": "area"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'INVALID_PARAMETER'\", () => pm.expect(!!(json.error.code === 'INVALID_PARAMETER')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - missing \"ranking\" segment",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/regions/Americas",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "regions",
+                "Americas"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'ENDPOINT_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'ENDPOINT_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "4. Health & misc",
+      "item": [
+        {
+          "name": "GET /health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            },
+            "description": "Probes the provider directly (1 record), bypassing the cache. If the provider is down: 200 with status \"degraded\" and source \"down\"."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"json.status === 'ok'\", () => pm.expect(!!(json.status === 'ok')).to.be.true);",
+                  "pm.test(\"json.source === 'up'\", () => pm.expect(!!(json.source === 'up')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - unknown endpoint",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/nope",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "nope"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'ENDPOINT_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'ENDPOINT_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - root path",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": []
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'ENDPOINT_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'ENDPOINT_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "ERROR 404 - wrong method (POST /countries/GTM)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/countries/GTM",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "countries",
+                "GTM"
+              ]
+            },
+            "description": "Only GET is defined; other methods fall through to the standard 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('HTTP 404', () => pm.response.to.have.status(404));",
+                  "pm.test('Content-Type is JSON', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('application/json'));",
+                  "const json = pm.response.json();",
+                  "pm.test(\"Object.keys(json).join() === 'error'\", () => pm.expect(!!(Object.keys(json).join() === 'error')).to.be.true);",
+                  "pm.test(\"json.error.code === 'ENDPOINT_NOT_FOUND'\", () => pm.expect(!!(json.error.code === 'ENDPOINT_NOT_FOUND')).to.be.true);",
+                  "pm.test(\"typeof json.error.message === 'string'\", () => pm.expect(!!(typeof json.error.message === 'string')).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
