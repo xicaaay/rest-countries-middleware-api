@@ -50,16 +50,18 @@ describe('CountriesStore', () => {
   it('shares one in-flight load between concurrent requests', async () => {
     const { store, fetchSpy } = setup(async () => [country('GTM')]);
 
-    await Promise.all([store.getAll(), store.getAll(), store.getByCode('GTM')]);
+    await Promise.all([store.getAll(), store.getAll(), store.getIndex()]);
 
     expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 
-  it('looks countries up by code', async () => {
+  it('exposes an index to look countries up by code', async () => {
     const { store } = setup(async () => [country('GTM'), country('MEX')]);
 
-    expect((await store.getByCode('MEX'))?.code).toBe('MEX');
-    expect(await store.getByCode('XYZ')).toBeUndefined();
+    const index = await store.getIndex();
+
+    expect(index.get('MEX')?.code).toBe('MEX');
+    expect(index.has('XYZ')).toBe(false);
   });
 
   it('serves stale data when a refresh fails, and backs off before retrying', async () => {

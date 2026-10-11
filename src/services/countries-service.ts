@@ -12,20 +12,20 @@ export class CountriesService {
   constructor(private readonly store: CountriesStore) {}
 
   async getCountry(code: string): Promise<CountryDetail> {
-    const countries = await this.store.getAll();
-    const country = countries.find((c) => c.code === code);
+    const byCode = await this.store.getIndex();
+    const country = byCode.get(code);
     if (!country) throw countryNotFound(code);
 
-    return toCountryDetail(country, new Map(countries.map((c) => [c.code, c])));
+    return toCountryDetail(country, byCode);
   }
 
   async getRoute(from: string, to: string): Promise<RouteResult> {
-    const countries = await this.store.getAll();
+    const byCode = await this.store.getIndex();
     for (const code of [from, to]) {
-      if (!countries.some((c) => c.code === code)) throw countryNotFound(code);
+      if (!byCode.has(code)) throw countryNotFound(code);
     }
 
-    const path = findLandRoute(countries, from, to);
+    const path = findLandRoute([...byCode.values()], from, to);
     return {
       from,
       to,

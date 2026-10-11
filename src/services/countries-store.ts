@@ -30,8 +30,9 @@ export class CountriesStore {
     return (await this.load()).countries;
   }
 
-  async getByCode(code: string): Promise<Country | undefined> {
-    return (await this.load()).byCode.get(code);
+  // Country lookup by alpha-3 code, built once per refresh (not per request)
+  async getIndex(): Promise<ReadonlyMap<string, Country>> {
+    return (await this.load()).byCode;
   }
 
   private async load(): Promise<Snapshot> {
