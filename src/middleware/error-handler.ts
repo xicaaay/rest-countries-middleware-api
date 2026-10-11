@@ -19,11 +19,11 @@ function toAppError(error: unknown): AppError {
   if (error instanceof AppError) return error;
 
   // Express itself rejects malformed URLs (e.g. "/countries/%E0%A4%A") with a 400
-  if (isHttpClientError(error)) return invalidParameter('The request could not be parsed.');
+  if (isHttpClientError(error)) return invalidParameter('No se pudo interpretar la solicitud.');
 
   // Anything else is a bug: log the details here, never send them to the client
   console.error('[unexpected error]', error);
-  return new AppError('INTERNAL_ERROR', 500, 'An unexpected error occurred.');
+  return new AppError('INTERNAL_ERROR', 500, 'Ocurrió un error inesperado.');
 }
 
 function isHttpClientError(error: unknown): boolean {

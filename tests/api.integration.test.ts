@@ -86,7 +86,7 @@ describe('API (provider simulated)', () => {
 
       expect(res.status).toBe(404);
       expect(res.body).toEqual({
-        error: { code: 'COUNTRY_NOT_FOUND', message: 'No country exists with code XYZ.' },
+        error: { code: 'COUNTRY_NOT_FOUND', message: 'No existe un país con el código XYZ.' },
       });
     });
 
@@ -237,7 +237,7 @@ describe('API (provider simulated)', () => {
 
       expect(res.status).toBe(500);
       expect(res.body).toEqual({
-        error: { code: 'INTERNAL_ERROR', message: 'An unexpected error occurred.' },
+        error: { code: 'INTERNAL_ERROR', message: 'Ocurrió un error inesperado.' },
       });
       expect(JSON.stringify(res.body)).not.toContain('secret');
     });

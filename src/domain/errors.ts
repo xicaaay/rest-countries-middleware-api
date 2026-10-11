@@ -1,4 +1,6 @@
-// Stable machine-readable codes returned to API clients
+// Stable machine-readable codes returned to API clients.
+// The `message` of each error is user-facing and written in Spanish (as the
+// spec's examples); internal logs (console.*) stay in English.
 export type ErrorCode =
   | 'INVALID_PARAMETER'
   | 'COUNTRY_NOT_FOUND'
@@ -27,20 +29,20 @@ export const invalidParameter = (message: string): AppError =>
 
 // 404: unknown country code
 export const countryNotFound = (code: string): AppError =>
-  new AppError('COUNTRY_NOT_FOUND', 404, `No country exists with code ${code}.`);
+  new AppError('COUNTRY_NOT_FOUND', 404, `No existe un país con el código ${code}.`);
 
 // 404: unknown region
 export const regionNotFound = (region: string): AppError =>
-  new AppError('REGION_NOT_FOUND', 404, `No region exists with name ${region}.`);
+  new AppError('REGION_NOT_FOUND', 404, `No existe una región con el nombre ${region}.`);
 
 // 404: the URL itself doesn't match any endpoint of this API
 export const endpointNotFound = (method: string, path: string): AppError =>
-  new AppError('ENDPOINT_NOT_FOUND', 404, `No endpoint matches ${method} ${path}.`);
+  new AppError('ENDPOINT_NOT_FOUND', 404, `No existe un endpoint para ${method} ${path}.`);
 
 // 502: the provider answered, but with an error or an unusable payload
 export const upstreamError = (): AppError =>
-  new AppError('UPSTREAM_ERROR', 502, 'The countries data source returned an error.');
+  new AppError('UPSTREAM_ERROR', 502, 'La fuente de datos de países devolvió un error.');
 
 // 503: the provider could not be reached (network failure or timeout)
 export const upstreamUnavailable = (): AppError =>
-  new AppError('UPSTREAM_UNAVAILABLE', 503, 'The countries data source is unavailable.');
+  new AppError('UPSTREAM_UNAVAILABLE', 503, 'La fuente de datos de países no está disponible.');

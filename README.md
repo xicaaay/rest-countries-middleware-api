@@ -109,10 +109,10 @@ curl http://localhost:3000/health
 
 ### Errors
 
-Every error has the same shape and the right HTTP status:
+Every error has the same shape and the right HTTP status. The `message` is written in Spanish (user-facing, as in the spec's example); the `code` is the stable, machine-readable part:
 
 ```json
-{ "error": { "code": "COUNTRY_NOT_FOUND", "message": "No country exists with code XYZ." } }
+{ "error": { "code": "COUNTRY_NOT_FOUND", "message": "No existe un país con el código XYZ." } }
 ```
 
 | Situation | HTTP | `code` |
